@@ -1,0 +1,514 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String
+  gender        String   // "male" or "female"
+  avatar        String?
+  gold          Int      @default(0)
+  gamesPlayed   Int      @default(0)
+  gamesWon      Int      @default(0)
+
+  // Title & Level System
+  title         String?  // Current title (لقب اللاعب)
+  level         Int      @default(1) // Numeric level (1-5)
+  
+  // Detailed Stats
+  spyWins       Int      @default(0) // Wins as spy
+  citizenWins   Int      @default(0) // Wins as citizen
+  totalSpyGames Int      @default(0) // Total games as spy
+  totalCitizenGames Int @default(0) // Total games as citizen
+  spiesCaught   Int      @default(0) // Times caught a spy
+  wordsGuessed  Int      @default(0) // Times guessed the word correctly as spy
+
+  // Streak & Rewards
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastLoginAt   DateTime?
+  lastRewardAt  DateTime?
+  lastSeenAt    DateTime? // For online status tracking
+
+  // Ban System
+  isBanned      Boolean  @default(false)
+  bannedAt      DateTime?
+  bannedReason  String?
+  bannedBy      String?  // Admin ID who banned the user
+
+  // Session
+  sessionToken  String?  @unique
+  sessionExpiry DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  rewards       DailyReward[]
+  gameHistory   GameHistory[]
+  experienceTransactions ExperienceTransaction[]
+  achievements  UserAchievement[]
+
+  // Social System Relations
+  friends         Friendship[]       @relation("UserFriends")
+  friendOf        Friendship[]       @relation("FriendOf")
+  sentRequests    FriendRequest[]    @relation("SentRequests")
+  receivedRequests FriendRequest[]   @relation("ReceivedRequests")
+  sentMessages    PrivateMessage[]   @relation("SentMessages")
+  receivedMessages PrivateMessage[]  @relation("ReceivedMessages")
+  notifications   Notification[]
+  sentInvites     RoomInvite[]       @relation("SentInvites")
+  receivedInvites RoomInvite[]       @relation("ReceivedInvites")
+
+  @@map("users")
+}
+
+// Achievements Definition
+model Achievement {
+  id          String   @id @default(cuid())
+  key         String   @unique // "first_win", "spy_master", "streak_3", etc.
+  name        String   // Display name
+  description String   // Description
+  icon        String   // Emoji or icon
+  xpReward    Int      // Experience reward
+  condition   String   // JSON condition: {"type": "wins", "value": 10}
+  category     String   @default("general") // "general", "spy", "citizen", "streak"
+  
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+// User's Unlocked Achievements
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt    DateTime @default(now())
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model DailyReward {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  claimedAt   DateTime @default(now())
+  goldAmount  Int
+  streakDay   Int
+
+  @@map("daily_rewards")
+}
+
+model GameHistory {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Game identification
+  gameType     String   // "spy" or "quiz"
+  playMode     String   // "online" or "offline"
+  gameMode     String   // "classic", "double-spies", "reversed", "silent" for spy / "relaxed", "speed" for quiz
+  categoryName String
+  
+  // Basic info
+  playerCount  Int
+  playedAt     DateTime @default(now())
+  
+  // Result
+  winner       String   // "spies" or "citizens" for spy / player name for quiz
+  winnerName   String?  // Name of the winner (for quiz)
+  reason       String   // Reason for game ending
+  
+  // XP earned by current player
+  xpEarned     Int      @default(0)
+  
+  // Spy game specific
+  spyCount     Int      @default(1)
+  secretWord   String?
+  spyNames     String?  // JSON array of spy names
+  spyDiscovered Boolean @default(false)
+  wordGuessed  Boolean  @default(false)
+  guessedBy    String?
+  
+  // Quiz game specific
+  quizRounds   Int      @default(0)
+  correctAnswers Int    @default(0) // For current player
+  
+  // Player rankings (JSON)
+  playerRankings String? // JSON array of {name, score, xp, titleInfo}
+  
+  // Guess history for spy games (JSON)
+  guessHistory String? // JSON array of {playerName, guess, success}
+
+  @@map("game_history")
+}
+
+// Experience Transaction History
+model ExperienceTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int      // positive = gained, negative = lost
+  reason      String   // "daily_reward", "game_win", "game_loss", "spy_win", "achievement", etc.
+  description String?  // Additional details
+  createdAt   DateTime @default(now())
+
+  @@map("experience_transactions")
+}
+
+// Quiz Game Models
+model QuizRoom {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  isPublic      Boolean     @default(true)
+  hostId        String
+  categoryId    String
+  mode          String      @default("relaxed") // "relaxed" or "speed"
+  playType      String      @default("solo") // "solo" or "teams"
+  difficulty    String      @default("medium") // "easy", "medium", "hard"
+  roundsTotal   Int         @default(10)
+  timePerRound  Int         @default(30) // seconds
+  status        String      @default("lobby") // "lobby", "running", "ended"
+  currentRound  Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  startedAt     DateTime?
+  endedAt       DateTime?
+
+  players       QuizPlayer[]
+  matches       QuizMatch[]
+
+  @@map("quiz_rooms")
+}
+
+// Spy Game Models
+model SpyRoom {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  name          String?     // Optional room name
+  isPublic      Boolean     @default(true)
+  hostId        String
+  categoryId    String      @default("places")
+  gameMode      String      @default("classic") // "classic", "double-spies", "reversed", "silent"
+  spyCount      Int         @default(1)
+  gameTime      Int         @default(5) // minutes
+  status        String      @default("lobby") // "lobby", "running", "ended"
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  lastActivityAt DateTime   @default(now())
+  startedAt     DateTime?
+  endedAt       DateTime?
+
+  players       SpyPlayer[]
+  game          SpyGame?
+
+  @@map("spy_rooms")
+}
+
+model SpyPlayer {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        SpyRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name        String
+  isHost      Boolean  @default(false)
+  isReady     Boolean  @default(true)
+  viewedRole  Boolean  @default(false)
+  voteFor     String?  // Player ID voted for
+  gold        Int      @default(0)
+  title       String?
+  level       Int      @default(1)
+  joinedAt    DateTime @default(now())
+
+  @@map("spy_players")
+}
+
+model SpyGame {
+  id              String   @id @default(cuid())
+  roomId          String   @unique
+  room            SpyRoom  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  categoryId      String
+  secretWord      String
+  spyIds          String   // JSON array of player IDs
+  gameMode        String   @default("classic")
+  partnerSpyId    String?
+  knowerId        String?
+  voteOpen        Boolean  @default(false)
+  winner          String?  // "spies" or "citizens"
+  finishedReason  String?
+  guessHistory    String   @default("[]") // JSON array
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  endsAt          DateTime
+
+  @@map("spy_games")
+}
+
+model QuizPlayer {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      QuizRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name      String
+  score     Int      @default(0)
+  matchScore Int     @default(0) // Score for current match
+  isHost    Boolean  @default(false)
+  isReady   Boolean  @default(true)
+  teamId    String?  // "A" or "B" for team games
+  joinedAt  DateTime @default(now())
+
+  answers   QuizAnswer[]
+
+  @@map("quiz_players")
+}
+
+model QuizMatch {
+  id           String      @id @default(cuid())
+  roomId       String
+  room         QuizRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roundNumber  Int
+  question     String
+  answer       String
+  questionType String
+  options      String?     // JSON array for multiple choice
+  categoryName String
+  startedAt    DateTime    @default(now())
+  endedAt      DateTime?
+
+  answers      QuizAnswer[]
+
+  @@map("quiz_matches")
+}
+
+model QuizAnswer {
+  id         String    @id @default(cuid())
+  matchId    String
+  match      QuizMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  playerId   String
+  player     QuizPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  answer     String
+  isCorrect  Boolean
+  points     Int       @default(0)
+  timeTaken  Int       @default(0) // milliseconds
+  answeredAt DateTime  @default(now())
+
+  @@unique([matchId, playerId])
+  @@map("quiz_answers")
+}
+
+// ==================== SOCIAL SYSTEM ====================
+
+// Friendship relationship
+model Friendship {
+  id          String   @id @default(cuid())
+  userId      String
+  friendId    String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friend      User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@map("friendships")
+}
+
+// Friend requests
+model FriendRequest {
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  status      String   @default("pending") // "pending", "accepted", "rejected"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender      User     @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@map("friend_requests")
+}
+
+// Private messages between users
+model PrivateMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  content     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId, isRead])
+  @@map("private_messages")
+}
+
+// Room messages (chat within game rooms)
+model RoomMessage {
+  id          String   @id @default(cuid())
+  roomCode    String   // Room identifier
+  playerId    String
+  playerName  String
+  content     String
+  gameType    String   @default("spy") // "spy" or "quiz"
+  createdAt   DateTime @default(now())
+
+  @@index([roomCode, createdAt])
+  @@map("room_messages")
+}
+
+// Notifications
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // "friend_request", "friend_accepted", "new_message", "room_invite"
+  title       String
+  content     String
+  data        String?  // JSON data related to notification
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// Room invites
+model RoomInvite {
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  roomCode    String
+  gameType    String   @default("spy") // "spy" or "quiz"
+  status      String   @default("pending") // "pending", "accepted", "rejected", "expired"
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation("SentInvites", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedInvites", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("room_invites")
+}
+
+// ==================== ADMIN SYSTEM ====================
+
+// Admin users with different permission levels
+model Admin {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String   // Hashed password
+  role          String   @default("admin") // "admin", "super_admin"
+  
+  // Permissions (JSON array of allowed actions)
+  permissions   String   @default("[]") // ["manage_users", "manage_rooms", "manage_games", "view_logs"]
+  
+  // Session
+  sessionToken  String?  @unique
+  sessionExpiry DateTime?
+  lastLoginAt   DateTime?
+  
+  // Status
+  isActive      Boolean  @default(true)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  auditLogs     AuditLog[]
+
+  @@map("admins")
+}
+
+// Audit log for all admin actions
+model AuditLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  
+  // Action details
+  action      String   // "user_ban", "user_edit", "room_delete", "game_end", etc.
+  targetType  String   // "user", "room", "game", "admin", "system"
+  targetId    String?  // ID of the affected entity
+  
+  // Action data
+  oldData     String?  // JSON of data before change
+  newData     String?  // JSON of data after change
+  description String   // Human readable description
+  
+  // Metadata
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+
+  @@index([adminId, createdAt])
+  @@index([targetType, targetId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}
+
+// Live monitoring - Online users tracking
+model OnlineUser {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  userName    String
+  
+  // Current status
+  status      String   @default("online") // "online", "in_room", "in_game", "away"
+  currentRoom String?  // Current room code if in a room
+  gameType    String?  // "spy" or "quiz"
+  
+  // Session info
+  ipAddress   String?
+  userAgent   String?
+  lastSeenAt  DateTime @default(now())
+  loginAt     DateTime @default(now())
+  
+  createdAt   DateTime @default(now())
+
+  @@map("online_users")
+}
+
+// Live rooms tracking
+model LiveRoom {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  gameType      String   // "spy" or "quiz"
+  
+  // Room details
+  hostId        String
+  hostName      String
+  isPublic      Boolean  @default(true)
+  status        String   @default("lobby") // "lobby", "running", "ended"
+  
+  // Players
+  playerCount   Int      @default(0)
+  maxPlayers    Int      @default(12)
+  players       String   @default("[]") // JSON array of player names/ids
+  
+  // Game info
+  gameMode      String?
+  categoryId    String?
+  
+  // Timing
+  createdAt     DateTime @default(now())
+  startedAt     DateTime?
+  endedAt       DateTime?
+  
+  @@map("live_rooms")
+}

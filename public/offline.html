@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الخبير - غير متصل</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #050907;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 400px;
+    }
+    
+    .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #6CF6FF, #3D7CFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    button {
+      padding: 16px 32px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    
+    .primary-btn {
+      background: linear-gradient(135deg, #6CF6FF, #3D7CFF);
+      color: #050907;
+    }
+    
+    .primary-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(108, 246, 255, 0.3);
+    }
+    
+    .secondary-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .secondary-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .features {
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .features h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #6CF6FF;
+    }
+    
+    .features ul {
+      list-style: none;
+      text-align: right;
+    }
+    
+    .features li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .features li:last-child {
+      border-bottom: none;
+    }
+    
+    .check {
+      color: #22C55E;
+      font-size: 20px;
+    }
+    
+    .x {
+      color: #EF4444;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>غير متصل بالإنترنت</h1>
+    <p>يبدو أنك غير متصل بالإنترنت حالياً. لا تقلق، يمكنك الاستمتاع باللعب أوفلاين!</p>
+    
+    <div class="buttons">
+      <button class="primary-btn" onclick="location.reload()">
+        🔄 حاول مرة أخرى
+      </button>
+      <button class="secondary-btn" onclick="goHome()">
+        🏠 الرئيسية
+      </button>
+    </div>
+    
+    <div class="features">
+      <h2>الميزات المتاحة</h2>
+      <ul>
+        <li><span class="check">✓</span> لعبة المخبر - أوفلاين</li>
+        <li><span class="check">✓</span> المسابقة - أوفلاين</li>
+        <li><span class="check">✓</span> سجل الألعاب</li>
+        <li><span class="check">✓</span> الإعدادات</li>
+        <li><span class="x">✗</span> اللعب الأونلاين</li>
+        <li><span class="x">✗</span> الشات والتواصل</li>
+        <li><span class="x">✗</span> المكالمات الصوتية</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    function goHome() {
+      window.location.href = '/';
+    }
+    
+    // التحقق من الاتصال كل 5 ثواني
+    setInterval(() => {
+      if (navigator.onLine) {
+        location.reload();
+      }
+    }, 5000);
+    
+    // الاستماع لحدث الاتصال
+    window.addEventListener('online', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
