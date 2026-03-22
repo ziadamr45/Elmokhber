@@ -213,6 +213,12 @@ export function RoomVoiceChat({
   useEffect(() => {
     if (!roomCode || !playerId || !playerName) return;
 
+    // Skip Ably connection if no key is configured
+    if (!ABLY_KEY) {
+      console.log('[RoomVoiceChat] Ably key not configured, skipping chat connection');
+      return;
+    }
+
     console.log(`[RoomVoiceChat] Connecting to Ably for room: ${roomCode}`);
 
     const ably = new Ably.Realtime({

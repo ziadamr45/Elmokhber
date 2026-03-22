@@ -439,6 +439,12 @@ export function RoomChatMini({
   useEffect(() => {
     if (!roomCode || !currentUserId || !currentUserName) return;
 
+    // Skip Ably connection if no key is configured
+    if (!ABLY_KEY) {
+      console.log('[RoomChat] Ably key not configured, skipping chat connection');
+      return;
+    }
+
     const ably = new Ably.Realtime({
       key: ABLY_KEY,
     });
