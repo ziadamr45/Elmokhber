@@ -1,6 +1,9 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 async function verifyAdmin(request: NextRequest) {
   // Check for token in Authorization header or cookie
   const authHeader = request.headers.get('authorization');

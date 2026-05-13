@@ -2,6 +2,9 @@ import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { createHash } from 'crypto';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // Simple password hashing
 function hashPassword(password: string): string {
   return createHash('sha256').update(password + 'elmokhber_salt').digest('hex');

@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { verifyAdminSession } from '@/lib/admin-middleware';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // POST - Reset admin password (requires authenticated admin session + current password)
 export async function POST(request: NextRequest) {
   try {

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ZAI from 'z-ai-web-dev-sdk';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // Fallback fuzzy matching functions
 function normalizeText(text: string): string {
   return text

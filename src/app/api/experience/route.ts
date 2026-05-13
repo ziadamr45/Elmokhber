@@ -1,6 +1,9 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   try {
     const sessionToken = request.cookies.get('session_token')?.value;

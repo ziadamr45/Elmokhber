@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import ZAI from 'z-ai-web-dev-sdk';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // Types
 interface QuizQuestion {
   question: string;

@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 const SESSION_DURATION_HOURS = 24 * 7;
 const DAILY_REWARD_GOLD = 25;
 

@@ -1,6 +1,9 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // Title definitions based on total experience
 export const TITLES = [
   { minXP: 0, maxXP: 99, title: 'مبتدئ', level: 1, color: '#9CA3AF' },      // Gray

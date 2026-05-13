@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// Allow longer execution time for Vercel serverless functions
+export const maxDuration = 60;
+
 // Types
 interface TitleInfo {
   title: string;
