@@ -1041,6 +1041,9 @@ export async function POST(request: NextRequest) {
           data: { updatedAt: new Date() }
         });
 
+        // Only reveal answer to players who already submitted their answer
+        const playerAlreadyAnswered = currentMatch ? answeredPlayerIds.includes(playerId) : false;
+
         return NextResponse.json({ 
           success: true, 
           inRoom: true, 
@@ -1048,7 +1051,7 @@ export async function POST(request: NextRequest) {
             ...formatRoomForClient(room),
             currentQuestion: currentMatch ? {
               question: currentMatch.question,
-              answer: currentMatch.answer,
+              answer: playerAlreadyAnswered ? currentMatch.answer : undefined,
               type: currentMatch.questionType,
               options: currentMatch.options ? JSON.parse(currentMatch.options) : undefined
             } : null,
@@ -1171,6 +1174,9 @@ export async function GET(request: NextRequest) {
           data: { updatedAt: new Date() }
         });
 
+        // Only reveal answer to players who already submitted their answer
+        const pollPlayerAlreadyAnswered = currentMatch ? answeredPlayerIds.includes(playerId || '') : false;
+
         return NextResponse.json({ 
           success: true, 
           inRoom: true, 
@@ -1178,7 +1184,7 @@ export async function GET(request: NextRequest) {
             ...formatRoomForClient(room),
             currentQuestion: currentMatch ? {
               question: currentMatch.question,
-              answer: currentMatch.answer,
+              answer: pollPlayerAlreadyAnswered ? currentMatch.answer : undefined,
               type: currentMatch.questionType,
               options: currentMatch.options ? JSON.parse(currentMatch.options) : undefined
             } : null,

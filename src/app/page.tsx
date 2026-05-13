@@ -3333,6 +3333,7 @@ const handleJoinRoom = async () => {
 const roomCode = code.trim().toUpperCase();
 if (roomCode.length !== 6) {
 notify('كود الغرفة لازم يكون 6 حروف');
+return;
 }
 setLoading(true);
 const playerName = name.trim() || defaultName || 'لاعب';
@@ -3569,7 +3570,7 @@ settings.gameMode === gameModeItem.id ? 'bg-purple-400 text-[#050907]' : 'bg-whi
 <button
 type="button"
 onClick={handleCreateRoom}
-disabled={!isConnected}
+disabled={loading}
 className="w-full rounded-full bg-white px-4 py-4 text-xl font-black text-[#050907] disabled:opacity-50"
 >
 أنشئ الغرفة
@@ -3600,7 +3601,7 @@ xt-white/35 focus:border-cyan-400"
 <button
 type="button"
 onClick={handleJoinRoom}
-disabled={!isConnected || code.length !== 6}
+disabled={loading || code.length !== 6}
 className="w-full rounded-full bg-white px-4 py-4 text-xl font-black text-[#050907] disabled:opacity-50"
 >
 ادخل الغرفة

@@ -121,6 +121,19 @@ function assignSpyIds(playerIds: string[], spyCount: number): string[] {
   return shuffleArray(playerIds).slice(0, spyCount);
 }
 
+// Arabic text normalization for smart comparison
+function normalizeArabic(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[آإأ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[ؤئ]/g, 'ء')
+    .replace(/[\u064B-\u065F]/g, '') // Remove diacritics
+    .replace(/[\s\-\_\.]/g, '');
+}
+
 // Role assignment based on game mode
 interface RoleAssignment {
   spyIds: string[];
@@ -553,10 +566,17 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'مش صاحب الغرفة' }, { status: 403 });
         }
 
+        // Whitelist allowed settings fields only - prevent arbitrary field injection
+        const allowedSettings: Record<string, unknown> = {};
+        if (typeof settings?.spyCount === 'number') allowedSettings.spyCount = settings.spyCount;
+        if (typeof settings?.gameTime === 'number') allowedSettings.gameTime = settings.gameTime;
+        if (typeof settings?.categoryId === 'string') allowedSettings.categoryId = settings.categoryId;
+        if (typeof settings?.gameMode === 'string' && ['classic', 'double-spies', 'reversed', 'silent'].includes(settings.gameMode)) allowedSettings.gameMode = settings.gameMode;
+
         const updatedRoom = await db.spyRoom.update({
           where: { id: player.room.id },
           data: {
-            ...settings,
+            ...allowedSettings,
             lastActivityAt: new Date(),
           },
           include: { players: true, game: true },
@@ -707,7 +727,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: 'اللعبة انتهت بالفعل' }, { status: 400 });
         }
 
-        const correct = guess.toLowerCase().trim() === game.secretWord.toLowerCase().trim();
+        const correct = normalizeArabic(guess.trim()) === normalizeArabic(game.secretWord.trim());
 
         const guessHistory = JSON.parse(game.guessHistory || '[]');
         guessHistory.push({
@@ -783,11 +803,16 @@ export async function POST(request: NextRequest) {
 
         const player = await db.spyPlayer.findUnique({
           where: { id: playerId },
-          include: { room: { include: { game: true } } },
+          include: { room: { include: { game: true, players: true } } },
         });
 
         if (!player || !player.room || !player.room.game) {
           return NextResponse.json({ success: false, error: 'مفيش لعبة' }, { status: 400 });
+        }
+
+        // Only host can open voting
+        if (player.room.hostId !== playerId) {
+          return NextResponse.json({ success: false, error: 'مش صاحب الغرفة' }, { status: 403 });
         }
 
         await db.spyGame.update({

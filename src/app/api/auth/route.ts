@@ -264,6 +264,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'كلمة المرور غير صحيحة' }, { status: 400 });
       }
 
+      // Check if user is banned
+      if (user.isBanned) {
+        return NextResponse.json({ success: false, error: 'تم حظر هذا الحساب' }, { status: 403 });
+      }
+
       const sessionToken = generateSessionToken();
       const sessionExpiry = getSessionExpiry();
       const now = new Date();

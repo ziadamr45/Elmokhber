@@ -1,42 +1,76 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
-import { createHash } from 'crypto';
+import bcrypt from 'bcryptjs';
+import { verifyAdminSession } from '@/lib/admin-middleware';
 
-// Simple password hashing
-function hashPassword(password: string): string {
-  return createHash('sha256').update(password + 'elmokhber_salt').digest('hex');
-}
-
-// POST - Reset admin password
+// POST - Reset admin password (requires authenticated admin session + current password)
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, newPassword } = body;
-
-    if (!email || !newPassword) {
+    // Verify the requesting admin is authenticated
+    const admin = await verifyAdminSession(request);
+    if (!admin) {
       return NextResponse.json({ 
         success: false, 
-        message: 'البريد الإلكتروني وكلمة المرور الجديدة مطلوبان' 
+        message: 'غير مصرح - يجب تسجيل الدخول أولاً' 
+      }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { email, currentPassword, newPassword } = body;
+
+    if (!email || !currentPassword || !newPassword) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'البريد الإلكتروني وكلمة المرور الحالية والجديدة مطلوبة' 
       }, { status: 400 });
     }
 
-    // Find admin
-    const admin = await db.admin.findUnique({
+    // Only super_admin can reset other admins' passwords
+    // Regular admins can only reset their own password
+    const targetAdmin = await db.admin.findUnique({
       where: { email: email.toLowerCase() }
     });
 
-    if (!admin) {
+    if (!targetAdmin) {
       return NextResponse.json({ 
         success: false, 
         message: 'المدير غير موجود' 
       }, { status: 404 });
     }
 
-    // Update password
-    const hashedPassword = hashPassword(newPassword);
+    // If resetting own password, verify current password
+    if (admin.id === targetAdmin.id) {
+      // Verify current password using bcrypt
+      const isValid = await bcrypt.compare(currentPassword, targetAdmin.password);
+      if (!isValid) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'كلمة المرور الحالية غير صحيحة' 
+        }, { status: 400 });
+      }
+    } else {
+      // Only super_admin can reset other admins' passwords
+      if (admin.role !== 'super_admin') {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'غير مصرح - فقط super_admin يمكنه إعادة تعيين كلمات مرور أخرى' 
+        }, { status: 403 });
+      }
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل' 
+      }, { status: 400 });
+    }
+
+    // Hash new password with bcrypt (cost 12)
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
     
     await db.admin.update({
-      where: { id: admin.id },
+      where: { id: targetAdmin.id },
       data: {
         password: hashedPassword,
         sessionToken: null,
@@ -50,8 +84,8 @@ export async function POST(request: NextRequest) {
         adminId: admin.id,
         action: 'password_reset',
         targetType: 'admin',
-        targetId: admin.id,
-        description: `تم إعادة تعيين كلمة المرور للمدير ${admin.name}`,
+        targetId: targetAdmin.id,
+        description: `تم إعادة تعيين كلمة المرور للمدير ${targetAdmin.name}`,
         ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
         userAgent: request.headers.get('user-agent') || 'unknown'
       }
