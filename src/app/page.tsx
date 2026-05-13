@@ -10,8 +10,7 @@ import { RoomCodeDisplay } from '@/components/RoomShareButton';
 import Onboarding, { hasCompletedOnboarding } from '@/components/Onboarding';
 import PrayerReminder from '@/components/PrayerReminder';
 import CoinIcon from '@/components/CoinIcon';
-import { PWAInstallButton } from '@/components/PWAInstallButton';
-import { OfflineIndicator, useOffline } from '@/hooks/useOffline';
+import { useOffline } from '@/hooks/useOffline';
 import type { Notification as SocialNotification } from '@/hooks/useSocial';
 import { useGameSocket, type Room as SocketRoom, type Player as SocketPlayer, type GameSettings as SocketGameSettings } from '@/hooks/useGameSocket';
 import { usePrayerReminder } from '@/hooks/usePrayerReminder';
@@ -5498,11 +5497,7 @@ setGameSummary(null);
 <Toast message={toast} />
 <ToastContainer toasts={toastNotifications} removeToast={removeToastNotification} />
 
-{/* Offline Indicator */}
-<OfflineIndicator />
 
-{/* PWA Install Banner */}
-<PWAInstallButton variant="banner" />
 
 {/* Session Invalid Modal - shown when user is logged in from another device */}
 {sessionInvalidReason && (
