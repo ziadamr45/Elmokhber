@@ -117,3 +117,12 @@ The app will be available at `http://localhost:3000`
 Made with ❤️ by [Ziad Amr](https://github.com/ziadamr45)
 
 </div>
+
+
+---
+
+## ⚠️ Source Available License | رخصة عرض المصدر
+
+This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects. See [LICENSE.md](./LICENSE.md) for full details.
+
+هذا المشروع متاح **للعرض والاطلاع فقط**. لا يمكن نسخ الكود أو إعادة إنتاجه أو استخدامه في مشاريع أخرى. راجع [LICENSE.md](./LICENSE.md) للتفاصيل الكاملة.
