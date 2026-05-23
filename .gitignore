@@ -49,3 +49,31 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# ===== SOURCE-AVAILABLE PROTECTION =====
+# Backend & sensitive files
+.env
+.env.*
+*.db
+*.db-journal
+prisma/migrations/
+db/
+upload/
+download/
+.zscripts/
+Caddyfile
+server.mjs
+launcher.sh
+start-*.sh
+auto-push.sh
+Dockerfile
+docker-compose.yml
+.dockerignore
+agent-ctx/
+worklog.md
+skills/
+mini-services/
+examples/
+railway.json
+vercel.json
+netlify.toml
