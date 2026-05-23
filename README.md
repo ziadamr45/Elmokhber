@@ -1,5 +1,10 @@
 <div align="center">
 
+
+## 📸 معاينة | Screenshot
+
+![Screenshot](public/og-image.png)
+
 # 🕵️ المخبر | Elmokhber
 
 ### لعبة اجتماعية تفاعلية تعتمد على الذكاء والخداع الاستراتيجي
