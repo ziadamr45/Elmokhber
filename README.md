@@ -1,7 +1,7 @@
 <div align="center">
 
 
-## 📸 معاينة | Screenshot
+## 📸 لقطات الشاشة | Screenshots
 
 ![Screenshot](public/og-image.png)
 
