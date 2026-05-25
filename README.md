@@ -107,12 +107,11 @@ Ziad Amr
 
 ---
 
-## ⚠️ رخصة عرض المصدر
+### 📜 الرخصة
 
 هذا المشروع متاح **للعرض والاطلاع فقط**. لا يمكن نسخ الكود أو إعادة إنتاجه أو استخدامه في مشاريع أخرى. راجع [LICENSE.md](./LICENSE.md) للتفاصيل الكاملة.
 
 ---
-
 
 
 ### 👨‍💻 المطور
@@ -133,6 +132,7 @@ Ziad Amr
 ---
 
 ## English
+
 
 **Elmokhber** is a social deduction game inspired by classic games like Mafia and Werewolf. Players take hidden roles — some try to uncover the traitor while others try to deceive and survive. The game relies on intelligence, perception, psychological reading, and strategic deception in a thrilling atmosphere.
 
@@ -215,7 +215,6 @@ Ziad Amr
 ---
 
 
-
 ### 👨‍💻 Developer
 
 **Ziad Amr**
@@ -231,6 +230,6 @@ Ziad Amr
 - 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
 - 📧 Email: ziad90216@gmail.com
 
-## ⚠️ Source Available License
+### ⚠️ Source Available License
 
 This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects. See [LICENSE.md](./LICENSE.md) for full details.
