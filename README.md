@@ -230,6 +230,6 @@ Ziad Amr
 - 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
 - 📧 Email: ziad90216@gmail.com
 
-### ⚠️ Source Available License
+### License
 
 This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects. See [LICENSE.md](./LICENSE.md) for full details.
