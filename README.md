@@ -46,7 +46,7 @@
 |---------|-----------|
 | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white) | إطار العمل الكامل |
 | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) | تطوير آمن بالأنواع |
-| ![Tailwind CSS3](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) | التصميم |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) | التصميم |
 | ![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=flat) | مكونات واجهة المستخدم |
 | ![LiveKit](https://img.shields.io/badge/LiveKit-2962FF?style=flat) | صوت وفيديو في الوقت الحقيقي |
 | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | ORM لقاعدة البيانات |
@@ -178,7 +178,7 @@ The app is built as an interactive web platform supporting real-time multiplayer
 |------------|---------|
 | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white) | Fullstack Framework |
 | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) | Type-safe Development |
-| ![Tailwind CSS3](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) | Styling |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white) | Styling |
 | ![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=flat) | UI Components |
 | ![LiveKit](https://img.shields.io/badge/LiveKit-2962FF?style=flat) | Real-time Voice & Video |
 | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | Database ORM |
