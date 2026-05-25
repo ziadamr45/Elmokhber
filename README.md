@@ -97,22 +97,11 @@ npm run dev
 
 </div>
 
----
-
-<div align="center">
-
-Ziad Amr
-
-</div>
-
----
-
 ### 📜 الرخصة
 
 هذا المشروع متاح **للعرض والاطلاع فقط**. لا يمكن نسخ الكود أو إعادة إنتاجه أو استخدامه في مشاريع أخرى. راجع [LICENSE.md](./LICENSE.md) للتفاصيل الكاملة.
 
 ---
-
 
 ### 👨‍💻 المطور
 
@@ -128,6 +117,12 @@ Ziad Amr
 - 🎥 YouTube: [@alhayat_ala_eltarek](https://youtube.com/@alhayat_ala_eltarek?si=pcsc_31Kcv3Jym14)
 - 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
 - 📧 Email: ziad90216@gmail.com
+
+---
+
+<p align="center">
+  مدعوم بواسطة <a href="https://ziadamrme.vercel.app/">زياد عمرو</a>
+</p>
 
 ---
 
@@ -204,16 +199,11 @@ The app will be available at `http://localhost:3000`
 4. **Voting** — Vote to eliminate suspects
 5. **Win** — The team that discovers the traitor first wins!
 
----
+### License
 
-<div align="center">
-
-Ziad Amr
-
-</div>
+This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects. See [LICENSE.md](./LICENSE.md) for full details.
 
 ---
-
 
 ### 👨‍💻 Developer
 
@@ -230,6 +220,8 @@ Ziad Amr
 - 💼 LinkedIn: [ziad-amr](https://www.linkedin.com/in/ziad-amr-44633a411)
 - 📧 Email: ziad90216@gmail.com
 
-### License
+---
 
-This project is available for **viewing and reference only**. The code cannot be copied, reproduced, or used in other projects. See [LICENSE.md](./LICENSE.md) for full details.
+<p align="center">
+  Powered by <a href="https://ziadamrme.vercel.app/">Ziad Amr</a>
+</p>
