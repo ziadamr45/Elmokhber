@@ -4552,7 +4552,7 @@ export default function App() {
 const [screen, setScreen] = useState<Screen>('home');
 const [profile, setProfile] = useState<Profile>({ name: 'زيزو', language: 'ar', gold: 0, gamesPlayed: 0, gamesWon: 0 });
 const [history, setHistory] = useState<HistoryEntry[]>([]);
-const [setupDraft, setSetupDraft] = useState<GameSetup>({ playerCount: 4, spyCount: 1, gameTime: 5, categoryId: 'places', playerNames: ['', '', '', ''] });
+const [setupDraft, setSetupDraft] = useState<GameSetup>({ playerCount: 4, spyCount: 1, gameTime: 5, categoryId: 'places', gameMode: 'classic', playerNames: ['', '', '', ''] });
 const [offlineMatch, setOfflineMatch] = useState<OfflineMatch | null>(null);
 const [result, setResult] = useState<ResultState | null>(null);
 const [toast, setToast] = useState<string | null>(null);
