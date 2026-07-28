@@ -4064,8 +4064,8 @@ onCancel={() => setConfirmExit(false)}
 <InviteFriendsModal
   open={showInviteModal}
   onOpenChange={setShowInviteModal}
-  friends={friends}
-  onlineUsers={onlineUsers}
+  friends={friends || []}
+  onlineUsers={onlineUsers || []}
   onInvite={handleInviteFriend}
   roomCode={room.code}
   gameMode={room.settings.gameMode}
