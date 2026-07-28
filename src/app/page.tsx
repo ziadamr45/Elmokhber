@@ -4675,7 +4675,7 @@ const gameSocket = useGameSocket({
   },
   onRoomUpdate: (room) => {
     console.log('[App] Room update received:', room.code);
-    setCurrentRoom(room);
+    setCurrentRoom(room as any);
   },
   onRoomClosed: (roomCode, reason) => {
     console.log('[App] Room closed:', roomCode, reason);
