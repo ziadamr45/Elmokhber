@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   applicationName: "الخبير",
   generator: "Next.js",
   referrer: "origin-when-cross-origin",
-  creator: [{ name: "الخبير Team" }],
+  creator: "الخبير Team",
   publisher: "الخبير",
   robots: {
     index: true,
