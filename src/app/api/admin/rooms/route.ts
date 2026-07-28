@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     let logDescription = '';
 
     if (gameType === 'spy') {
-      const room = await db.spyRoom.findUnique({ where: { id: roomId }, include: { players: true } });
+      const room = await db.spyRoom.findUnique({ where: { id: roomId }, include: { players: true, game: true } });
       if (!room) {
         return NextResponse.json({ success: false, message: 'الغرفة غير موجودة' }, { status: 404 });
       }
