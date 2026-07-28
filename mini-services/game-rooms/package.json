@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --hot index.ts",
-    "start": "bun run index.ts",
-    "postinstall": "prisma generate"
+    "start": "bun run index.ts"
   },
   "dependencies": {
     "@prisma/client": "^7.5.0",
