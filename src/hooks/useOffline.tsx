@@ -12,7 +12,7 @@ interface OfflineState {
 
 export function useOffline(): OfflineState & {
   hideOfflineMessage: () => void;
-  showOfflineMessage: () => void;
+  triggerOfflineMessage: () => void;
 } {
   const [isOnline, setIsOnline] = useState(true);
   const [wasOffline, setWasOffline] = useState(false);
@@ -68,7 +68,7 @@ export function useOffline(): OfflineState & {
     lastOnlineTime,
     showOfflineMessage,
     hideOfflineMessage,
-    showOfflineMessage: showOfflineMsg,
+    triggerOfflineMessage: showOfflineMsg,
   };
 }
 
