@@ -923,7 +923,7 @@ async function advanceToNextRound(room: Room) {
   emitRoomUpdate(room)
 }
 
-const PORT = 3004
+const PORT = parseInt(process.env.PORT || '3004', 10)
 httpServer.listen(PORT, () => {
   console.log(`🎮 Quiz Game server running on port ${PORT}`)
 })

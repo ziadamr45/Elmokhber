@@ -210,7 +210,7 @@ io.on('connection', (socket: Socket) => {
   })
 })
 
-const PORT = 3020
+const PORT = parseInt(process.env.PORT || '3020', 10)
 httpServer.listen(PORT, () => {
   console.log(`🔧 Admin Service running on port ${PORT}`)
   console.log(`📡 WebSocket ready for admin connections`)

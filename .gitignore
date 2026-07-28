@@ -72,8 +72,10 @@ docker-compose.yml
 agent-ctx/
 worklog.md
 skills/
-mini-services/
+mini-services/*/bun.lock
+mini-services/*/log.txt
+mini-services/*/node_modules/
 examples/
-railway.json
+/railway.json
 vercel.json
 netlify.toml

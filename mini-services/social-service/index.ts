@@ -629,7 +629,7 @@ io.on('connection', (socket: Socket) => {
   })
 })
 
-const PORT = 3010
+const PORT = parseInt(process.env.PORT || '3010', 10)
 httpServer.listen(PORT, () => {
   console.log(`👥 Social Service running on port ${PORT}`)
   console.log(`📡 WebSocket endpoints ready`)
