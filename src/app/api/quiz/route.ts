@@ -763,7 +763,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Generate first question
-        const question = await generateQuestion(room.categoryId, room.difficulty || 'medium', []);
+        const question = await generateQuestion(room.categoryId, (room.difficulty || 'medium') as 'easy' | 'medium' | 'hard', []);
 
         // Create the first match/round
         const match = await db.quizMatch.create({
@@ -963,7 +963,7 @@ export async function POST(request: NextRequest) {
         const previousAnswers = previousMatches.map(m => m.answer);
 
         // Generate next question with room's difficulty
-        const question = await generateQuestion(room.categoryId, room.difficulty || 'medium', previousAnswers);
+        const question = await generateQuestion(room.categoryId, (room.difficulty || 'medium') as 'easy' | 'medium' | 'hard', previousAnswers);
 
         const newRound = room.currentRound + 1;
 
