@@ -97,7 +97,7 @@ export function generateAppNotification(
     title: template.title,
     message,
     icon: template.icon,
-    action: template.action,
+    action: (template as any).action,
     createdAt: Date.now(),
     isRead: false,
   };
