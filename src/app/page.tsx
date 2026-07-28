@@ -3721,7 +3721,7 @@ useEffect(() => {
 
   // Handle endsAt - could be Date object, string, or number
   let endsAtValue: number;
-  const endsAt = room.game.endsAt;
+  const endsAt: any = room.game.endsAt;
   
   if (typeof endsAt === 'number') {
     endsAtValue = endsAt;
@@ -3731,7 +3731,7 @@ useEffect(() => {
     endsAtValue = new Date(endsAt).getTime();
   } else {
     // Fallback: use gameTime from settings
-    const startedAt = room.game.startedAt;
+    const startedAt: any = room.game.startedAt;
     let startedAtValue: number;
     if (typeof startedAt === 'number') {
       startedAtValue = startedAt;
