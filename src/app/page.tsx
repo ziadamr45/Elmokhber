@@ -3783,7 +3783,7 @@ const handleRevealRole = useCallback(async () => {
     setMyRole({
       isSpy: result.isSpy || false,
       secretWord: result.secretWord || null,
-      partnerSpyName: result.partnerSpyName || null,
+      partnerSpyName: (result as any).partnerSpyName || null,
     });
   }
 }, [gameApi]);
