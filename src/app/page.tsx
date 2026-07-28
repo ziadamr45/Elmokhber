@@ -4668,7 +4668,7 @@ const getSessionToken = useCallback(() => {
 // Socket.io for real-time room updates
 const gameSocket = useGameSocket({
   serverPort: 3003,
-  sessionToken: getSessionToken(),
+  sessionToken: getSessionToken() || undefined,
   onConnected: (id) => {
     console.log('[App] Socket connected:', id);
     setIsConnected(true);
