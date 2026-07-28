@@ -1,0 +1,12 @@
+# Nixpacks configuration for Bun
+providers = ["bun"]
+
+[phases.install]
+cmds = ["bun install --frozen-lockfile"]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = ["bun run postinstall || true"]
+
+[start]
+cmd = "bun run index.ts"
