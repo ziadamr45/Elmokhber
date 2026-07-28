@@ -4667,6 +4667,7 @@ const getSessionToken = useCallback(() => {
 
 // Socket.io for real-time room updates
 const gameSocket = useGameSocket({
+  serverUrl: process.env.NEXT_PUBLIC_GAME_ROOMS_URL || 'https://game-rooms-production.up.railway.app',
   serverPort: 3003,
   sessionToken: getSessionToken() || undefined,
   onConnected: (id) => {

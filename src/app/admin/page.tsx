@@ -1909,9 +1909,9 @@ export default function AdminPanel() {
   // Initialize socket connection when authenticated
   useEffect(() => {
     if (isAuthenticated && adminUser) {
-      const socket = io('/', {
+      const adminServiceUrl = process.env.NEXT_PUBLIC_ADMIN_SERVICE_URL || 'https://admin-service-production-cd2e.up.railway.app';
+      const socket = io(adminServiceUrl, {
         transports: ['websocket', 'polling'],
-        query: { XTransformPort: '3020' },
       });
 
       socket.on('connect', () => {

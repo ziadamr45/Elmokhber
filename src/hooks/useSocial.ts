@@ -131,7 +131,7 @@ interface UseSocialReturn {
   setStatus: (status: 'online' | 'away' | 'busy') => void
 }
 
-const SOCIAL_SERVICE_URL = process.env.NEXT_PUBLIC_SOCIAL_SERVICE_URL || '/?XTransformPort=3010'
+const SOCIAL_SERVICE_URL = process.env.NEXT_PUBLIC_SOCIAL_SERVICE_URL || 'https://social-service-production-2773.up.railway.app'
 
 export function useSocial(options: UseSocialOptions): UseSocialReturn {
   const {

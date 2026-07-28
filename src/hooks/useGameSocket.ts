@@ -75,6 +75,7 @@ interface PublicRoom {
 }
 
 interface UseGameSocketOptions {
+  serverUrl?: string;
   serverPort?: number;
   sessionToken?: string;
   onRoomCreated?: (room: Room, playerId: string) => void;
@@ -101,6 +102,7 @@ interface UseGameSocketOptions {
 
 export function useGameSocket(options: UseGameSocketOptions = {}) {
   const {
+    serverUrl,
     serverPort = 3003,
     sessionToken,
     onRoomCreated,
@@ -131,13 +133,22 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
 
     console.log('[GameSocket] Connecting to server...');
 
-    const socket = io('/?XTransformPort=' + serverPort, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-    });
+    // Use Railway URL if provided, otherwise fall back to local dev (same origin with XTransformPort)
+    const socket = serverUrl
+      ? io(serverUrl, {
+          transports: ['websocket', 'polling'],
+          reconnection: true,
+          reconnectionAttempts: 10,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+        })
+      : io('/?XTransformPort=' + serverPort, {
+          transports: ['websocket', 'polling'],
+          reconnection: true,
+          reconnectionAttempts: 10,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+        });
 
     socketRef.current = socket;
 
