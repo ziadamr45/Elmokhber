@@ -159,7 +159,7 @@ export function RoomVoiceChat({
 
   // Ably refs
   const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<Ably.Types.RealtimeChannel | null>(null);
+  const channelRef = useRef<any>(null);
 
   // ==================== VOICE CONNECTION ====================
 

@@ -79,7 +79,7 @@ export function RoomChat({
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<Ably.Types.RealtimeChannel | null>(null);
+  const channelRef = useRef<any>(null);
 
   const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
 
@@ -434,7 +434,7 @@ export function RoomChatMini({
   const [internalMessages, setInternalMessages] = useState<RoomMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<Ably.Types.RealtimeChannel | null>(null);
+  const channelRef = useRef<any>(null);
 
   useEffect(() => {
     if (!roomCode || !currentUserId || !currentUserName) return;

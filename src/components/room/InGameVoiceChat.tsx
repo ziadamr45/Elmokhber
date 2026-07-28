@@ -110,7 +110,7 @@ export function InGameVoiceChat({
 
   // Refs
   const ablyRef = useRef<Ably.Realtime | null>(null);
-  const channelRef = useRef<Ably.Types.RealtimeChannel | null>(null);
+  const channelRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -179,7 +179,7 @@ export function InGameVoiceChat({
     }
 
     let ably: Ably.Realtime | null = null;
-    let channel: Ably.Types.RealtimeChannel | null = null;
+    let channel: any = null;
 
     try {
       ably = new Ably.Realtime({ key: ABLY_KEY });
