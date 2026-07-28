@@ -127,6 +127,40 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [publicRooms, setPublicRooms] = useState<PublicRoom[]>([]);
 
+  // ===== Stable refs to avoid re-triggering socket effect on every render =====
+  // These refs hold the latest values of callbacks and sessionToken so that
+  // the socket setup effect only runs once (on mount) instead of every render.
+  const sessionTokenRef = useRef(sessionToken);
+  const onConnectedRef = useRef(onConnected);
+  const onRoomCreatedRef = useRef(onRoomCreated);
+  const onRoomJoinedRef = useRef(onRoomJoined);
+  const onRoomUpdateRef = useRef(onRoomUpdate);
+  const onRoomClosedRef = useRef(onRoomClosed);
+  const onPlayerLeftRef = useRef(onPlayerLeft);
+  const onPlayerJoinedRef = useRef(onPlayerJoined);
+  const onPublicRoomsRef = useRef(onPublicRooms);
+  const onRoleRevealedRef = useRef(onRoleRevealed);
+  const onGuessResultRef = useRef(onGuessResult);
+  const onErrorRef = useRef(onError);
+  const onRoomLeftRef = useRef(onRoomLeft);
+  const onAuthErrorRef = useRef(onAuthError);
+
+  // Keep refs in sync with latest props on every render
+  sessionTokenRef.current = sessionToken;
+  onConnectedRef.current = onConnected;
+  onRoomCreatedRef.current = onRoomCreated;
+  onRoomJoinedRef.current = onRoomJoined;
+  onRoomUpdateRef.current = onRoomUpdate;
+  onRoomClosedRef.current = onRoomClosed;
+  onPlayerLeftRef.current = onPlayerLeft;
+  onPlayerJoinedRef.current = onPlayerJoined;
+  onPublicRoomsRef.current = onPublicRooms;
+  onRoleRevealedRef.current = onRoleRevealed;
+  onGuessResultRef.current = onGuessResult;
+  onErrorRef.current = onError;
+  onRoomLeftRef.current = onRoomLeft;
+  onAuthErrorRef.current = onAuthError;
+
   // Initialize socket connection
   useEffect(() => {
     if (socketRef.current) return;
@@ -152,17 +186,28 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
 
     socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('[GameSocket] Connected:', socket.id);
-      // Don't set isConnected yet - wait for authentication
-      // Send authentication
-      if (sessionToken) {
+    // Helper to send authentication using the latest sessionToken
+    const sendAuth = () => {
+      const token = sessionTokenRef.current;
+      if (token) {
         console.log('[GameSocket] Sending authentication...');
-        socket.emit('authenticate', { sessionToken });
+        socket.emit('authenticate', { sessionToken: token });
       } else {
         console.log('[GameSocket] No session token, connection will be rejected');
         socket.emit('authenticate', { sessionToken: null });
       }
+    };
+
+    socket.on('connect', () => {
+      console.log('[GameSocket] Connected:', socket.id);
+      // Don't set isConnected yet - wait for authentication
+      sendAuth();
+    });
+
+    // Re-authenticate on every reconnect (after transient disconnects)
+    socket.io.on('reconnect', () => {
+      console.log('[GameSocket] Reconnected - re-authenticating...');
+      sendAuth();
     });
 
     socket.on('disconnect', (reason) => {
@@ -181,7 +226,7 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
       if (data.authenticated) {
         setIsConnected(true);
         setIsAuthenticated(true);
-        onConnected?.(data.id);
+        onConnectedRef.current?.(data.id);
       }
     });
 
@@ -189,57 +234,58 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
       console.error('[GameSocket] Auth error:', data.reason);
       setIsConnected(false);
       setIsAuthenticated(false);
-      onAuthError?.(data.reason);
+      // Use ref to call latest callback without re-triggering the effect
+      onAuthErrorRef.current?.(data.reason);
     });
 
     socket.on('room-created', (data: { room: Room; playerId: string }) => {
       console.log('[GameSocket] Room created:', data.room.code);
       setCurrentRoom(data.room);
       setPlayerId(data.playerId);
-      onRoomCreated?.(data.room, data.playerId);
+      onRoomCreatedRef.current?.(data.room, data.playerId);
     });
 
     socket.on('room-joined', (data: { room: Room; playerId: string }) => {
       console.log('[GameSocket] Room joined:', data.room.code);
       setCurrentRoom(data.room);
       setPlayerId(data.playerId);
-      onRoomJoined?.(data.room, data.playerId);
+      onRoomJoinedRef.current?.(data.room, data.playerId);
     });
 
     socket.on('room-update', (data: { room: Room }) => {
       console.log('[GameSocket] Room update:', data.room.code, 'players:', data.room.players.length);
       setCurrentRoom(data.room);
-      onRoomUpdate?.(data.room);
+      onRoomUpdateRef.current?.(data.room);
     });
 
     socket.on('room-closed', (data: { roomCode: string; reason: string }) => {
       console.log('[GameSocket] Room closed:', data.roomCode, 'reason:', data.reason);
       setCurrentRoom(null);
       setPlayerId(null);
-      onRoomClosed?.(data.roomCode, data.reason);
+      onRoomClosedRef.current?.(data.roomCode, data.reason);
     });
 
     socket.on('room-left', (data: { roomCode: string }) => {
       console.log('[GameSocket] Left room:', data.roomCode);
-      onRoomLeft?.(data.roomCode);
+      onRoomLeftRef.current?.(data.roomCode);
     });
 
     socket.on('player-left', (data: { playerId: string; playerName: string; room: Room }) => {
       console.log('[GameSocket] Player left:', data.playerName);
       setCurrentRoom(data.room);
-      onPlayerLeft?.(data.playerId, data.playerName, data.room);
+      onPlayerLeftRef.current?.(data.playerId, data.playerName, data.room);
     });
 
     socket.on('player-joined', (data: { player: Player; room: Room }) => {
       console.log('[GameSocket] Player joined:', data.player.name);
       setCurrentRoom(data.room);
-      onPlayerJoined?.(data.player, data.room);
+      onPlayerJoinedRef.current?.(data.player, data.room);
     });
 
     socket.on('public-rooms', (data: { rooms: PublicRoom[] }) => {
       console.log('[GameSocket] Public rooms:', data.rooms.length);
       setPublicRooms(data.rooms);
-      onPublicRooms?.(data.rooms);
+      onPublicRoomsRef.current?.(data.rooms);
     });
 
     socket.on('role-revealed', (data: {
@@ -251,17 +297,17 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
       category?: { id: string; name: string; icon: string };
     }) => {
       console.log('[GameSocket] Role revealed, isSpy:', data.isSpy);
-      onRoleRevealed?.(data);
+      onRoleRevealedRef.current?.(data);
     });
 
     socket.on('guess-result', (data: { success: boolean }) => {
       console.log('[GameSocket] Guess result:', data.success);
-      onGuessResult?.(data.success);
+      onGuessResultRef.current?.(data.success);
     });
 
     socket.on('error', (data: { message: string }) => {
       console.error('[GameSocket] Error:', data.message);
-      onError?.(data.message);
+      onErrorRef.current?.(data.message);
     });
 
     // ========== DISCONNECTION DETECTION ==========
@@ -313,7 +359,10 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [serverPort, sessionToken, onConnected, onRoomCreated, onRoomJoined, onRoomUpdate, onRoomClosed, onPlayerLeft, onPlayerJoined, onPublicRooms, onRoleRevealed, onGuessResult, onError, onRoomLeft, onAuthError]);
+    // Only depend on serverUrl and serverPort — never on callbacks/sessionToken
+    // (those are kept in refs and read on every event trigger)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverUrl, serverPort]);
 
   // Actions
   const createRoom = useCallback((data: {

@@ -4699,10 +4699,14 @@ const gameSocket = useGameSocket({
     notify(message);
   },
   onAuthError: (reason) => {
-    console.log('[App] Socket auth error:', reason);
-    setAuthUser(null);
-    setSessionInvalidReason(reason);
-    setScreen('auth');
+    // Socket auth errors are NOT a reason to log the user out.
+    // The HTTP session (cookie-based) is the source of truth — if it's still
+    // valid, the user stays logged in. Socket auth can transiently fail due
+    // to network hiccups, Railway cold starts, or DB latency. The socket
+    // will automatically retry authentication on reconnect.
+    console.log('[App] Socket auth error (NOT logging out - HTTP session is source of truth):', reason);
+    // Only show a non-blocking notification so the user is aware
+    // (no setAuthUser(null), no setScreen('auth'), no setSessionInvalidReason)
   },
 });
 // Check auth on mount
@@ -4725,10 +4729,15 @@ titleInfo: data.user.titleInfo || getTitleFromXP(data.user.gold || 0),
 };
 setAuthUser(userWithTitle);
 } else {
+// Not authenticated (no session_token cookie, or expired) — this is a normal
+// logged-out state, so it's safe to clear the auth user.
 setAuthUser(null);
 }
 } catch {
-setAuthUser(null);
+// Network/fetch error: do NOT log the user out. The HTTP session (cookie) is
+// probably still valid, and logging out would force the user to re-login on
+// every transient network blip. The user will be re-checked on next action.
+console.log('[App] checkAuth fetch failed - keeping current auth state');
 }
 setAuthChecked(true);
 }, []);

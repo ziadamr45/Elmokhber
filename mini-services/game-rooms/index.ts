@@ -19,7 +19,7 @@ const io = new Server(httpServer, {
 })
 
 // Session verification helper
-async function verifySession(sessionToken: string): Promise<{ valid: boolean; userId?: string }> {
+async function verifySession(sessionToken: string): Promise<{ valid: boolean; userId?: string; dbError?: boolean }> {
   if (!sessionToken) {
     return { valid: false }
   }
@@ -41,8 +41,10 @@ async function verifySession(sessionToken: string): Promise<{ valid: boolean; us
 
     return { valid: true, userId: user.id }
   } catch (error) {
-    console.error('[Session] Error verifying session:', error)
-    return { valid: false }
+    // DB error (connection issue, timeout, etc.) — NOT a real "invalid session".
+    // Return dbError flag so the caller can retry instead of disconnecting.
+    console.error('[Session] DB error verifying session:', error)
+    return { valid: false, dbError: true }
   }
 }
 
@@ -554,6 +556,17 @@ io.on('connection', (socket: Socket) => {
 
     console.log(`🔑 [Auth] Verifying session for ${socket.id}...`)
     const session = await verifySession(sessionToken)
+    
+    // DB error: don't disconnect — the socket.io client will retry on reconnect.
+    // Emitting 'auth-error' here would force the client to log out even though
+    // the user's session is probably still valid (just a transient DB issue).
+    if (session.dbError) {
+      console.log(`⚠️ [Auth] DB error verifying session for ${socket.id} - NOT disconnecting (will retry)`)
+      // Don't emit auth-error, don't disconnect. The client's socket.io
+      // reconnection logic will retry, and the periodic auth check on the
+      // frontend will keep the user logged in via the HTTP session.
+      return
+    }
     
     if (!session.valid) {
       console.log(`❌ [Auth] Invalid session for ${socket.id}`)
