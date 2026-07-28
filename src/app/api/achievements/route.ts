@@ -79,7 +79,22 @@ export async function GET(request: NextRequest) {
     
     // Get user's unlocked achievements if logged in
     let unlockedIds: string[] = [];
-    let userStats = null;
+    let userStats: {
+      id: string;
+      gold: number;
+      gamesPlayed: number;
+      gamesWon: number;
+      spyWins: number;
+      citizenWins: number;
+      totalSpyGames: number;
+      totalCitizenGames: number;
+      spiesCaught: number;
+      wordsGuessed: number;
+      currentStreak: number;
+      longestStreak: number;
+      title: string | null;
+      titleInfo: { title: string; level: number; color: string; nextTitle: string | null; xpToNext: number };
+    } | null = null;
     
     if (sessionToken) {
       const user = await db.user.findUnique({
