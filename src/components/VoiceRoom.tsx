@@ -102,7 +102,7 @@ function VoiceRoomInner({
     return () => {
       room.off(RoomEvent.Connected, handleConnected);
       room.off(RoomEvent.Disconnected, handleDisconnected);
-      room.off(RoomEvent.ConnectionError, handleConnectionError);
+      room.off(RoomEvent.Reconnecting, handleConnectionError as any);
     };
   }, [room, onConnected, onDisconnected, participants.length, localParticipant]);
 
