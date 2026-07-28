@@ -162,10 +162,14 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
   onAuthErrorRef.current = onAuthError;
 
   // Initialize socket connection
+  // Wait for sessionToken to be available before connecting — otherwise the
+  // socket would connect with no token and immediately get rejected by the
+  // server, causing an auth-error that (in older code) logged the user out.
   useEffect(() => {
     if (socketRef.current) return;
+    if (!sessionTokenRef.current) return;
 
-    console.log('[GameSocket] Connecting to server...');
+    console.log('[GameSocket] Connecting to server (sessionToken available)...');
 
     // Use Railway URL if provided, otherwise fall back to local dev (same origin with XTransformPort)
     const socket = serverUrl
@@ -359,10 +363,11 @@ export function useGameSocket(options: UseGameSocketOptions = {}) {
       socket.disconnect();
       socketRef.current = null;
     };
-    // Only depend on serverUrl and serverPort — never on callbacks/sessionToken
-    // (those are kept in refs and read on every event trigger)
+    // Depend on serverUrl, serverPort, AND whether sessionToken is available.
+    // The socket should only connect AFTER the user logs in (token available).
+    // Once connected (socketRef.current set), the guard at the top prevents reconnect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverUrl, serverPort]);
+  }, [serverUrl, serverPort, !!sessionToken]);
 
   // Actions
   const createRoom = useCallback((data: {
