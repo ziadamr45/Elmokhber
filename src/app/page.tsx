@@ -3946,9 +3946,9 @@ return (
 >
   <span className="text-xl">👥</span>
   <span>دعوة أصدقاء</span>
-  {onlineUsers?.length > 0 && (
+  {(onlineUsers?.length ?? 0) > 0 && (
     <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
-      {onlineUsers.length} متصل
+      {onlineUsers?.length ?? 0} متصل
     </span>
   )}
 </button>
