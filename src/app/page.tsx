@@ -1669,7 +1669,7 @@ function HelpView({
       <div className="space-y-4 pb-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="flex justify-center"><MaskLogo size={80} /></div>
+          <div className="flex justify-center"><CoinIcon size={80} /></div>
           <h2 className="text-2xl font-black">🕵️ المخبر</h2>
           <p className="text-white/70 text-sm">لعبة تجمع بين الذكاء والضحك والتفكير 🔥</p>
         </div>
@@ -1740,6 +1740,7 @@ function HelpView({
               <span className="font-bold text-cyan-400 text-sm">الخطوة 4: التصويت</span>
             </div>
             <ul className="text-xs text-white/70 space-y-0.5 pr-5">
+              <li>• التصويت بيفتح في آخر وقت الجولة أو لما اللاعبين يطلبوه</li>
               <li>• كل لاعب يختار مين المخبر</li>
               <li>• لو تم اكتشاف المخبر → الفريق يكسب</li>
               <li>• لو لأ → المخبر يكسب</li>
@@ -1788,7 +1789,8 @@ function HelpView({
             <ul className="text-xs text-white/70 space-y-0.5 pr-4">
               <li>• كل اللاعبين مخبرين</li>
               <li>• لاعب واحد بس هو اللي عارف الكلمة</li>
-              <li>• مكافأته أعلى لأنه في موقف أصعب</li>
+              <li>• العارف في موقف أصعب، فمكافأته أعلى لو كسب</li>
+              <li>• المخبر مكافأته عادية لو كسب</li>
             </ul>
           </div>
 
@@ -1798,7 +1800,7 @@ function HelpView({
             <ul className="text-xs text-white/70 space-y-0.5 pr-4">
               <li>• ممنوع الكلام خالص</li>
               <li>• اللعب كله بالإشارات</li>
-              <li>• مكافأة أعلى شوية لصعوبة اللعب</li>
+              <li>• مكافأة المواطن أعلى شوية من الكلاسيكي لصعوبة اللعب بالإشارات</li>
             </ul>
           </div>
         </div>
@@ -1858,40 +1860,51 @@ function HelpView({
           <p className="text-xs text-white/70 text-center mb-3">
             كل مود ليه نظام خبرة مختلف حسب صعوبته
           </p>
-          <div className="space-y-1.5 text-xs">
-            <div className="flex items-center justify-between">
+          <div className="space-y-1.5 text-xs" dir="rtl">
+            {/* Classic */}
+            <div className="flex items-center justify-between gap-2">
               <span className="text-white/80">🎯 كلاسيكي - الفوز:</span>
-              <span className="flex items-center gap-1 font-bold text-yellow-400">
+              <span className="flex items-center gap-1 font-bold text-yellow-400" dir="rtl">
+                <span>المواطن: 10</span>
+                <span className="text-white/40">|</span>
+                <span>المخبر: 15</span>
                 <CoinIcon size={16} />
-                10 | المخبر: 15
               </span>
             </div>
-            <div className="flex items-center justify-between">
+            {/* Double Spies */}
+            <div className="flex items-center justify-between gap-2">
               <span className="text-white/80">👥 مخبرين - الفوز:</span>
-              <span className="flex items-center gap-1 font-bold text-yellow-400">
+              <span className="flex items-center gap-1 font-bold text-yellow-400" dir="rtl">
+                <span>10 للكل</span>
                 <CoinIcon size={16} />
-                10 للكل
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/80">🔄 معكوس - العارف يكسب:</span>
-              <span className="flex items-center gap-1 font-bold text-yellow-400">
+            {/* Reversed */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-white/80">🔄 معكوس - الفوز:</span>
+              <span className="flex items-center gap-1 font-bold text-yellow-400" dir="rtl">
+                <span>العارف: 20 🔥</span>
+                <span className="text-white/40">|</span>
+                <span>المخبر: 10</span>
                 <CoinIcon size={16} />
-                20 🔥
               </span>
             </div>
-            <div className="flex items-center justify-between">
+            {/* Silent */}
+            <div className="flex items-center justify-between gap-2">
               <span className="text-white/80">🤫 صامت - الفوز:</span>
-              <span className="flex items-center gap-1 font-bold text-yellow-400">
+              <span className="flex items-center gap-1 font-bold text-yellow-400" dir="rtl">
+                <span>المواطن: 12</span>
+                <span className="text-white/40">|</span>
+                <span>المخبر: 15</span>
                 <CoinIcon size={16} />
-                12 | المخبر: 15
               </span>
             </div>
-            <div className="flex items-center justify-between border-t border-white/10 pt-1.5 mt-1.5">
+            {/* Loss */}
+            <div className="flex items-center justify-between border-t border-white/10 pt-1.5 mt-1.5 gap-2">
               <span className="text-white/60">الخسارة (أي مود):</span>
-              <span className="flex items-center gap-1 font-bold text-yellow-400/70">
+              <span className="flex items-center gap-1 font-bold text-yellow-400/70" dir="rtl">
+                <span>5</span>
                 <CoinIcon size={16} />
-                5
               </span>
             </div>
           </div>
