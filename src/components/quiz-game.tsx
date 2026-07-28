@@ -772,7 +772,7 @@ function QuizLobbyScreen({ room, playerId, onLeave, onStart, isHost, onSwitchTea
             
             <div className="grid grid-cols-2 gap-3">
               <TeamCard
-                team={teamA}
+                team={teamA as Team}
                 players={teamAPlayers}
                 isHost={isHost}
                 currentTeamId={currentPlayer?.teamId}
@@ -780,7 +780,7 @@ function QuizLobbyScreen({ room, playerId, onLeave, onStart, isHost, onSwitchTea
                 onEditName={(name) => onUpdateTeamName('A', name)}
               />
               <TeamCard
-                team={teamB}
+                team={teamB as Team}
                 players={teamBPlayers}
                 isHost={isHost}
                 currentTeamId={currentPlayer?.teamId}
@@ -870,20 +870,20 @@ function TeamScoresDisplay({ room, teamScores }: { room: QuizRoom; teamScores: {
     <div className="rounded-xl bg-white/5 p-3">
       <div className="grid grid-cols-2 gap-3">
         {/* Team A */}
-        <div className="rounded-xl p-3 text-center" style={{ backgroundColor: teamA.color + '20' }}>
+        <div className="rounded-xl p-3 text-center" style={{ backgroundColor: (teamA?.color || '#3B82F6') + '20' }}>
           <div className="flex items-center justify-center gap-1 mb-1">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: teamA.color }} />
-            <span className="text-sm font-bold">{teamA.name}</span>
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: teamA?.color || '#3B82F6' }} />
+            <span className="text-sm font-bold">{teamA?.name || 'الفريق أ'}</span>
           </div>
           <div className="text-2xl font-black">{teamScores.teamA}</div>
           <div className="text-xs text-white/50">{teamAPlayers.length} لاعب</div>
         </div>
         
         {/* Team B */}
-        <div className="rounded-xl p-3 text-center" style={{ backgroundColor: teamB.color + '20' }}>
+        <div className="rounded-xl p-3 text-center" style={{ backgroundColor: (teamB?.color || '#F59E0B') + '20' }}>
           <div className="flex items-center justify-center gap-1 mb-1">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: teamB.color }} />
-            <span className="text-sm font-bold">{teamB.name}</span>
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: teamB?.color || '#F59E0B' }} />
+            <span className="text-sm font-bold">{teamB?.name || 'الفريق ب'}</span>
           </div>
           <div className="text-2xl font-black">{teamScores.teamB}</div>
           <div className="text-xs text-white/50">{teamBPlayers.length} لاعب</div>
