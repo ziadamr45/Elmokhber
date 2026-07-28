@@ -893,7 +893,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Calculate team scores if team game
-        let teamScores = null;
+        let teamScores: { teamA: number; teamB: number } | null = null;
         if (room.playType === 'teams') {
           const allPlayers = await db.quizPlayer.findMany({ where: { roomId: room.id } });
           teamScores = {
