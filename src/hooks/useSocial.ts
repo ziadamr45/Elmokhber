@@ -166,8 +166,8 @@ export function useSocial(options: UseSocialOptions): UseSocialReturn {
   const [roomMessages, setRoomMessages] = useState<Map<string, RoomMessage[]>>(new Map())
 
   // Refs for callbacks used in socket handlers
-  const refreshFriendsRef = useRef<() => Promise<void>>()
-  const refreshConversationsRef = useRef<() => Promise<void>>()
+  const refreshFriendsRef = useRef<() => Promise<void>>(null as any)
+  const refreshConversationsRef = useRef<() => Promise<void>>(null as any)
 
   // ==================== FRIENDS API ====================
 
