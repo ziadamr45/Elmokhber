@@ -4686,12 +4686,12 @@ const gameSocket = useGameSocket({
   },
   onPlayerLeft: (pId, playerName, room) => {
     console.log('[App] Player left:', playerName);
-    setCurrentRoom(room);
+    setCurrentRoom(room as any);
     notify(`${playerName} غادر الغرفة`);
   },
   onPlayerJoined: (player, room) => {
     console.log('[App] Player joined:', player.name);
-    setCurrentRoom(room);
+    setCurrentRoom(room as any);
     notify(`${player.name} انضم للغرفة`);
   },
   onError: (message) => {
@@ -5101,12 +5101,12 @@ const handleSaveHistoryEntry = useCallback(async (entry: HistoryEntry) => {
 
 // Online room handlers
 const handleRoomCreated = useCallback((room: Room, pId: string) => {
-setCurrentRoom(room);
+setCurrentRoom(room as any);
 setPlayerId(pId);
 setScreen('room');
 }, []);
 const handleRoomJoined = useCallback((room: Room, pId: string) => {
-setCurrentRoom(room);
+setCurrentRoom(room as any);
 setPlayerId(pId);
 setScreen('room');
 }, []);
