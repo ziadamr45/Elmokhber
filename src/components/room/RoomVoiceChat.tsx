@@ -254,6 +254,40 @@ export function RoomVoiceChat({
     };
   }, [roomCode, playerId, playerName]);
 
+  // ==================== FETCH EXISTING MESSAGES ====================
+  // When the user enters a room, fetch the chat history from the DB so they
+  // can see what was said before they joined (or what they said earlier).
+  useEffect(() => {
+    if (!roomCode) return;
+
+    let cancelled = false;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/social/room-messages?roomCode=${encodeURIComponent(roomCode)}&limit=50`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (cancelled) return;
+        if (Array.isArray(data.messages)) {
+          setMessages(prev => {
+            // Merge: keep existing (real-time) messages + add fetched ones, dedup by id
+            const existingIds = new Set(prev.map(m => m.id));
+            const newOnes = data.messages.filter((m: RoomMessage) => !existingIds.has(m.id));
+            return [...newOnes, ...prev];
+          });
+        }
+      } catch (error) {
+        console.error('[RoomVoiceChat] Failed to fetch messages:', error);
+      }
+    };
+
+    fetchMessages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [roomCode]);
+
   // ==================== AUTO SCROLL ====================
 
   useEffect(() => {
@@ -271,6 +305,22 @@ export function RoomVoiceChat({
     setInputValue('');
     setIsSending(true);
 
+    // Generate a temporary ID for optimistic update (so the sender sees their
+    // message immediately, even before the server responds / Ably echoes it back).
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const optimisticMessage: RoomMessage = {
+      id: tempId,
+      roomCode,
+      playerId,
+      playerName,
+      content,
+      gameType,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Add the message to the UI immediately
+    setMessages(prev => [...prev, optimisticMessage]);
+
     try {
       const response = await fetch('/api/social/room-messages', {
         method: 'POST',
@@ -282,11 +332,21 @@ export function RoomVoiceChat({
         }),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        // Replace the temp message with the real one from the server (has real id + createdAt)
+        if (data.message && data.message.id) {
+          setMessages(prev => prev.map(m => m.id === tempId ? data.message : m));
+        }
+      } else {
         console.error('[RoomVoiceChat] Failed to send message');
+        // Remove the optimistic message if the send failed
+        setMessages(prev => prev.filter(m => m.id !== tempId));
       }
     } catch (error) {
       console.error('[RoomVoiceChat] Send error:', error);
+      // Remove the optimistic message if the send failed
+      setMessages(prev => prev.filter(m => m.id !== tempId));
     } finally {
       setIsSending(false);
       setTimeout(() => inputRef.current?.focus(), 100);

@@ -251,7 +251,7 @@ async function cleanupOldRooms() {
   try {
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-    const twoMinutesAgo = new Date(now.getTime() - 2 * 60 * 1000);
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
     const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
     // Delete ended rooms older than 5 minutes
@@ -262,11 +262,13 @@ async function cleanupOldRooms() {
       },
     });
 
-    // Delete lobby rooms with no activity for 2 minutes
+    // Delete lobby rooms with no activity for 1 minute (was 2 minutes)
+    // This ensures rooms left behind by users who closed their browser
+    // (without calling leave-room) get cleaned up quickly.
     await db.spyRoom.deleteMany({
       where: {
         status: 'lobby',
-        lastActivityAt: { lt: twoMinutesAgo },
+        lastActivityAt: { lt: oneMinuteAgo },
       },
     });
 
@@ -277,15 +279,23 @@ async function cleanupOldRooms() {
         lastActivityAt: { lt: thirtyMinutesAgo },
       },
     });
+
+    // Also delete any lobby rooms that have NO players at all (empty rooms)
+    // regardless of when they were created — an empty room is useless.
+    await db.spyRoom.deleteMany({
+      where: {
+        status: 'lobby',
+        players: { none: {} },
+      },
+    });
   } catch (error) {
     console.error('[Cleanup] Error:', error);
   }
 }
 
-// Run cleanup occasionally
-if (Math.random() < 0.1) {
-  cleanupOldRooms().catch(console.error);
-}
+// Run cleanup on EVERY request (not 10% chance) so abandoned rooms get
+// cleaned up quickly. The query is cheap (indexed on status + lastActivityAt).
+cleanupOldRooms().catch(console.error);
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -303,6 +313,9 @@ export async function GET(request: NextRequest) {
           where: {
             isPublic: true,
             status: 'lobby',
+            // Only show rooms that have at least one player
+            // (empty rooms should have been cleaned up, but this is a safety net)
+            players: { some: {} },
           },
           include: { players: true },
           orderBy: { createdAt: 'desc' },
