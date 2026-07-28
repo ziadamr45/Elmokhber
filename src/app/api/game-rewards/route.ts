@@ -22,9 +22,9 @@ const SPY_GAME_XP = {
     participation: 5,
   },
   silent: {
-    spyWin: 15,
-    citizenWin: 12,
-    participation: 5,
+    spyWin: 20,
+    citizenWin: 18,
+    participation: 7,
   },
 };
 

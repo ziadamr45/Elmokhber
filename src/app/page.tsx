@@ -1669,7 +1669,7 @@ function HelpView({
       <div className="space-y-4 pb-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="flex justify-center"><CoinIcon size={80} /></div>
+          <div className="flex justify-center"><MaskLogo size={80} /></div>
           <h2 className="text-2xl font-black">🕵️ المخبر</h2>
           <p className="text-white/70 text-sm">لعبة تجمع بين الذكاء والضحك والتفكير 🔥</p>
         </div>
@@ -1800,7 +1800,7 @@ function HelpView({
             <ul className="text-xs text-white/70 space-y-0.5 pr-4">
               <li>• ممنوع الكلام خالص</li>
               <li>• اللعب كله بالإشارات</li>
-              <li>• مكافأة المواطن أعلى شوية من الكلاسيكي لصعوبة اللعب بالإشارات</li>
+              <li>• مكافأة أعلى من الكلاسيكي لصعوبة اللعب بالإشارات من غير كلام</li>
             </ul>
           </div>
         </div>
@@ -1893,9 +1893,9 @@ function HelpView({
             <div className="flex items-center justify-between gap-2">
               <span className="text-white/80">🤫 صامت - الفوز:</span>
               <span className="flex items-center gap-1 font-bold text-yellow-400" dir="rtl">
-                <span>المواطن: 12</span>
+                <span>المواطن: 18</span>
                 <span className="text-white/40">|</span>
-                <span>المخبر: 15</span>
+                <span>المخبر: 20</span>
                 <CoinIcon size={16} />
               </span>
             </div>
