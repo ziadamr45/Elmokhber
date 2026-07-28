@@ -92,7 +92,7 @@ function VoiceRoomInner({
 
     room.on(RoomEvent.Connected, handleConnected);
     room.on(RoomEvent.Disconnected, handleDisconnected);
-    room.on(RoomEvent.ConnectionError, handleConnectionError);
+    room.on(RoomEvent.Reconnecting, handleConnectionError as any);
 
     // If already connected, trigger callback
     if (room.state === 'connected' && !connectedRef.current) {
