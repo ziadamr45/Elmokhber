@@ -925,7 +925,7 @@ export async function POST(request: NextRequest) {
 
         const player = await db.spyPlayer.findUnique({
           where: { id: playerId },
-          include: { room: true },
+          include: { room: { include: { game: true } } },
         });
 
         if (!player || !player.room || player.room.hostId !== playerId) {
